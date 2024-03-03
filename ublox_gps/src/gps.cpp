@@ -73,6 +73,10 @@ void Gps::subscribe_nmea(std::function<void(const std::string &)> callback) {
   callbacks_.set_nmea_callback(callback);
 }
 
+void Gps::subscribe_rtcm(std::function<void(const std::string &)> callback) {
+  callbacks_.set_rtcm_callback(callback);
+}
+
 void Gps::subscribeAcks() {
   // Set NACK handler
   subscribeId<ublox_msgs::msg::Ack>(std::bind(&Gps::processNack, this,

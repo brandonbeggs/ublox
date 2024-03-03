@@ -42,6 +42,7 @@
 #include <utility>
 
 #include <ublox_msgs/serialization.hpp>
+#include <ublox_serialization/rtcm_reader.hpp>
 
 namespace ublox_gps {
 
@@ -174,6 +175,15 @@ class CallbackHandlers final {
   }
 
   /**
+   * @brief Add a callback handler for rtcm messages
+   * @param callback the callback handler for the message
+   */
+  void set_rtcm_callback(std::function<void(const std::string&)> callback) {
+    std::lock_guard<std::mutex> lock(callback_mutex_);
+    callback_rtcm_ = callback;
+  }
+
+  /**
    * @brief Calls the callback handler for the message in the reader.
    * @param reader a reader containing a u-blox message
    */
@@ -208,6 +218,20 @@ class CallbackHandlers final {
       nmea_start = buffer.find('$', nmea_end + 1);
       nmea_end = buffer.find('\n', nmea_start);
     }
+  }  
+
+  /**
+   * @brief Calls the callback handler for the rtcm messages in the reader.
+   * @param reader a reader containing an rtcm message
+   */
+  void handle_rtcm(ublox::Reader& reader) {
+    std::lock_guard<std::mutex> lock(callback_mutex_);
+    if (callback_rtcm_ == nullptr) {
+      return;
+    }
+
+    const std::string buffer = reader.getExtraData();
+    ublox::RTCMReader(buffer, callback_rtcm_);
   }
 
   /**
@@ -263,6 +287,7 @@ class CallbackHandlers final {
 
       handle(reader);
     }
+    handle_rtcm(reader);
     handle_nmea(reader);
 
     // delete read bytes from ASIO input buffer
@@ -282,6 +307,9 @@ class CallbackHandlers final {
 
   //! Callback handler for nmea messages
   std::function<void(const std::string &)> callback_nmea_{nullptr};
+
+  //! Callback handler for rtcm messages
+  std::function<void(const std::string &)> callback_rtcm_{nullptr};
 };
 
 }  // namespace ublox_gps

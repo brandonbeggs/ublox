@@ -271,6 +271,7 @@ class UbloxNode final : public rclcpp::Node {
   rclcpp::Publisher<ublox_msgs::msg::AidEPH>::SharedPtr aid_eph_pub_;
   rclcpp::Publisher<ublox_msgs::msg::AidHUI>::SharedPtr aid_hui_pub_;
   rclcpp::Publisher<nmea_msgs::msg::Sentence>::SharedPtr nmea_pub_;
+  rclcpp::Publisher<rtcm_msgs::msg::Message>::SharedPtr rtcm_pub_;
 
   void publish_nmea(const std::string & sentence, const std::string & topic);
 

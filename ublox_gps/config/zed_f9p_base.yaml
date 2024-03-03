@@ -1,0 +1,56 @@
+# Configuration Settings for C94-M8P device
+ublox_gps_node:
+    ros__parameters:
+      debug: 3                    # Range 0-4 (0 means no debug statements will print)
+      device: /dev/ttyUSB0
+      frame_id: gps
+      uart1:
+        baudrate: 115200
+        in: 33                     # No UART in for base
+        out: 33                   # RTCM 3
+
+      tmode3: 1                   # Survey-In Mode
+      sv_in:
+        reset: True               # True: disables and re-enables survey-in (resets)
+                                  # False: Disables survey-in only if TMODE3 is
+                                  # disabled
+        min_dur: 60              # Survey-In Minimum Duration [s]
+        acc_lim: 30.0              # Survey-In Accuracy Limit [m]
+
+      rtcm:
+        ids: [74, 84, 94, 124, 230, 254]     # RTCM Messages to configure for Base station
+                                        # Enabled: GPS MSM7, GLONASS MSM7,
+                                        # GLONASS CP bias, Stationary RTK ref
+                                        # 0xF5 0x05 Stationary RTK reference station
+                                        # ARP
+                                        # 0xF5 0x4A GPS MSM4
+                                        # 0xF5 0x4D GPS MSM7
+                                        # 0xF5 0x54 GLONASS MSM4
+                                        # 0xF5 0x57 GLONASS MSM7
+                                        # 0xF5 0x7C BeiDou MSM4
+                                        # 0xF5 0x7F BeiDou MSM7
+                                        # 0xF5 0xE6 GLONASS code-phase biases
+                                        # 0xF5 0xFE Reference station PVT
+                                        #(u-blox proprietary RTCM Message)
+        rates: [1, 1, 1, 1, 1, 1]      # in number of navigation solutions, must match
+
+      # GNSS Config
+      gnss:
+        gps: true
+        galileo: true
+        glonass: true             # Supported by C94-M8P
+        beidou: false             # Supported by C94-M8P
+        qzss: true               # Supported by C94-M8P
+
+      inf:
+        all: true                   # Whether to display all INF messages in console
+      
+      publish:
+        all: true
+        # aid:
+        #   hui: false
+        nav:
+          svin: True
+          status: True
+          pvt: True
+          posecef: false

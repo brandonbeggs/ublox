@@ -500,6 +500,10 @@ void UbloxNode::getRosParams() {
     // Larger queue depth to handle all NMEA strings being published consecutively
     nmea_pub_ = this->create_publisher<nmea_msgs::msg::Sentence>("nmea", 20);
   }
+  if (rtcms_.size() > 0) {
+    // Larger queue depth to handle all RTCM strings being published consecutively
+    rtcm_pub_ = this->create_publisher<rtcm_msgs::msg::Message>("rtcm", 20);
+  }
 
   // Create subscriber for RTCM correction data to enable RTK
   this->subscription_ = this->create_subscription<rtcm_msgs::msg::Message>("/rtcm", 10, std::bind(&UbloxNode::rtcmCallback, this, std::placeholders::_1));
@@ -624,6 +628,16 @@ void UbloxNode::subscribe() {
       m.header.frame_id = frame_id_;
       m.sentence = sentence;
       nmea_pub_->publish(m);
+    });
+  }
+
+  if (rtcms_.size() > 0) {
+    gps_->subscribe_rtcm([this](const std::string &message) {
+      rtcm_msgs::msg::Message m;
+      m.header.stamp = this->now();
+      m.header.frame_id = frame_id_;
+      m.message = std::vector<uint8_t>(message.begin(), message.end());//reinterpret_cast<uint8_t[]>(message);
+      rtcm_pub_->publish(m);
     });
   }
 

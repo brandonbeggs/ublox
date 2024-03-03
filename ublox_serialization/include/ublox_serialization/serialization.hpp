@@ -332,6 +332,9 @@ class Message {
  * @brief Options for the Reader and Writer for encoding and decoding messages.
  */
 struct Options {
+  Options(uint8_t sync_byte_a, uint8_t sync_byte_b, uint8_t header_len, uint8_t checksum_len) : sync_a(sync_byte_a), sync_b(sync_byte_b),
+              header_length(header_len), checksum_length(checksum_len) {}
+              
   /**
    * The default options for a u-blox message.
    */
@@ -370,7 +373,7 @@ class Reader {
          const Options &options = Options()) :
       data_(data), count_(count), found_(false), options_(options)
   {
-    extra_data_.reserve(1024);
+    extra_data_.reserve(8192);
   }
 
   using iterator = const uint8_t *;

@@ -358,6 +358,12 @@ class Gps final {
   void subscribe_nmea(std::function<void(const std::string &)> callback);
 
   /**
+   * @brief Subscribe to the given RTCM message.
+   * @param callback the callback handler for the message
+   */
+  void subscribe_rtcm(std::function<void(const std::string &)> callback);
+
+  /**
    * @brief Subscribe to the message with the given ID. This is used for
    * messages which have the same format but different message IDs,
    * e.g. INF messages.
